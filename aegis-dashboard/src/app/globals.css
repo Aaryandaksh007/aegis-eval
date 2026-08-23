@@ -10,7 +10,8 @@
   /* ─── Borders ─── */
   --color-border-subtle: #222225;
   --color-border-default: #333338;
-  --color-border-focus: #e8a627; /* Amber focus ring */
+  --color-border-focus: #e8a627;
+  /* Amber focus ring */
 
   /* ─── Text ─── */
   --color-text-primary: #ececef;
@@ -20,18 +21,24 @@
   /* ─── Brand: Warm Amber/Gold ─── 
        Amber = Trust, Optimism, Clarity
        Used for CTAs, active states, and emphasis */
-  --color-brand-primary: #e8a627;       /* Warm amber */
-  --color-brand-primary-hover: #d4951f; /* Slightly deeper on press */
+  --color-brand-primary: #e8a627;
+  /* Warm amber */
+  --color-brand-primary-hover: #d4951f;
+  /* Slightly deeper on press */
   --color-brand-primary-subtle: rgba(232, 166, 39, 0.12);
 
   /* ─── Status Colors ─── */
-  --color-status-success: #34d399;      /* Emerald 400 — calmer green */
+  --color-status-success: #34d399;
+  /* Emerald 400 — calmer green */
   --color-status-success-bg: rgba(52, 211, 153, 0.1);
-  --color-status-warning: #fbbf24;      /* Amber 400 */
+  --color-status-warning: #fbbf24;
+  /* Amber 400 */
   --color-status-warning-bg: rgba(251, 191, 36, 0.1);
-  --color-status-danger: #f87171;       /* Red 400 — softer red */
+  --color-status-danger: #f87171;
+  /* Red 400 — softer red */
   --color-status-danger-bg: rgba(248, 113, 113, 0.08);
-  --color-status-info: #60a5fa;         /* Blue 400 */
+  --color-status-info: #60a5fa;
+  /* Blue 400 */
   --color-status-info-bg: rgba(96, 165, 250, 0.08);
 
   /* ─── Glass ─── */
@@ -58,7 +65,9 @@
 }
 
 /* ══════════ Base Reset ══════════ */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -78,18 +87,36 @@ body {
 }
 
 /* ══════════ Typography ══════════ */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: -0.02em;
   color: var(--color-text-primary);
 }
 
-h1 { font-size: 2rem; }
-h2 { font-size: 1.5rem; }
-h3 { font-size: 1.125rem; }
+h1 {
+  font-size: 2rem;
+}
 
-p, span, label, td, th, li {
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.125rem;
+}
+
+p,
+span,
+label,
+td,
+th,
+li {
   font-size: 0.9375rem;
   line-height: 1.6;
 }
@@ -137,6 +164,7 @@ p, span, label, td, th, li {
   cursor: pointer;
   transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
+
 .card-interactive:hover {
   transform: translateY(-2px);
   border-color: var(--color-border-focus);
@@ -204,25 +232,63 @@ p, span, label, td, th, li {
   text-transform: uppercase;
 }
 
-.badge.success { background: var(--color-status-success-bg); color: var(--color-status-success); border: 1px solid rgba(52, 211, 153, 0.2); }
-.badge.danger  { background: var(--color-status-danger-bg);  color: var(--color-status-danger);  border: 1px solid rgba(248, 113, 113, 0.2); }
-.badge.warning { background: var(--color-status-warning-bg); color: var(--color-status-warning); border: 1px solid rgba(251, 191, 36, 0.2); }
-.badge.info    { background: var(--color-status-info-bg);    color: var(--color-status-info);    border: 1px solid rgba(96, 165, 250, 0.2); }
+.badge.success {
+  background: var(--color-status-success-bg);
+  color: var(--color-status-success);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+.badge.danger {
+  background: var(--color-status-danger-bg);
+  color: var(--color-status-danger);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+.badge.warning {
+  background: var(--color-status-warning-bg);
+  color: var(--color-status-warning);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.badge.info {
+  background: var(--color-status-info-bg);
+  color: var(--color-status-info);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+}
 
 /* ══════════ Animations ══════════ */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .animate-fade-in {
@@ -246,21 +312,29 @@ p, span, label, td, th, li {
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ══════════ Scrollbar ══════════ */
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--color-border-default);
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-tertiary);
 }
