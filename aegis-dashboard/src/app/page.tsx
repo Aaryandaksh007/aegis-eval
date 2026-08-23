@@ -4,36 +4,111 @@ import React, { useState, useEffect } from 'react';
 import MetricCard from '@/components/MetricCard';
 import { ShieldAlert, Play, RefreshCw, AlertTriangle, Bug, Navigation, ArrowRight } from 'lucide-react';
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  AreaChart,
-  Area
 } from 'recharts';
+
+const API_BASE = 'http://localhost:8000';
 
 const mockRegressionData = [
   { name: 'v1.0', reliability: 65, safety: 80 },
   { name: 'v1.1', reliability: 68, safety: 82 },
-  { name: 'v1.2', reliability: 62, safety: 75 }, // Regression detected
+  { name: 'v1.2', reliability: 62, safety: 75 },
   { name: 'v1.3', reliability: 74, safety: 88 },
   { name: 'v1.4', reliability: 81, safety: 92 },
   { name: 'v1.5', reliability: 86, safety: 95 },
 ];
 
+interface RunSummary {
+  run_id: string;
+  status: string;
+  created_at: string;
+  scorecard: any;
+  verdict: any;
+  request: any;
+}
+
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
+  const [runs, setRuns] = useState<RunSummary[]>([]);
+  const [health, setHealth] = useState<any>(null);
+  const [runningEval, setRunningEval] = useState(false);
 
-  // Simulate network request for data
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [healthRes, runsRes] = await Promise.all([
+        fetch(`${API_BASE}/api/health`),
+        fetch(`${API_BASE}/api/evaluations?limit=10`),
+      ]);
+      setHealth(await healthRes.json());
+      const runsData = await runsRes.json();
+      setRuns(runsData.runs || []);
+    } catch (e) {
+      console.error('Failed to fetch data:', e);
+    } finally {
       setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+    }
+  };
+
+  useEffect(() => { fetchData(); }, []);
+
+  const handleRunEvaluation = async () => {
+    setRunningEval(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/evaluations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenario_id: 'refund',
+          faults: ['timeout'],
+          mutations: true,
+          trial_count: 50,
+          destructive_probe: true,
+          llm_mode: 'mock',
+        }),
+      });
+      const data = await res.json();
+      // Wait a moment then refresh
+      setTimeout(() => {
+        fetchData();
+        setRunningEval(false);
+      }, 2000);
+    } catch (e) {
+      console.error('Failed to run evaluation:', e);
+      setRunningEval(false);
+    }
+  };
+
+  // Compute live metrics from runs
+  const completedRuns = runs.filter(r => r.status === 'completed' && r.scorecard);
+  const avgPassK = completedRuns.length > 0
+    ? Math.round(completedRuns.reduce((sum, r) => sum + (r.scorecard?.pass_k || 0), 0) / completedRuns.length)
+    : 0;
+  const blockedCount = completedRuns.filter(r => r.scorecard?.blocked).length;
+  const totalFailureModes = completedRuns.reduce((sum, r) => sum + (r.scorecard?.failure_count || 0), 0);
+
+  // Build recent failures from actual run data
+  const recentFailures = completedRuns
+    .filter(r => r.scorecard?.blocked)
+    .slice(0, 3)
+    .map(r => ({
+      id: r.run_id,
+      type: r.scorecard?.failure_modes?.[0]?.name || 'Unknown',
+      desc: r.scorecard?.failure_modes?.[0]?.description || 'Failure detected during evaluation.',
+      severity: r.scorecard?.failure_modes?.[0]?.severity === 'critical' ? 'high' : 'medium',
+      icon: r.scorecard?.failure_modes?.[0]?.id?.includes('loop') ? RefreshCw : r.scorecard?.failure_modes?.[0]?.id?.includes('hallucin') ? Bug : Navigation,
+    }));
+
+  // Fallback failures for empty state
+  const displayFailures = recentFailures.length > 0 ? recentFailures : [
+    { id: 'no-runs', type: 'No failures yet', desc: 'Run an evaluation to see results here.', severity: 'medium', icon: AlertTriangle },
+  ];
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
@@ -44,25 +119,26 @@ export default function Dashboard() {
           </h1>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem', fontWeight: 500 }}>
             Continuous Integration for Autonomous Agents
+            {health && <span style={{ color: 'var(--color-text-tertiary)', marginLeft: '0.75rem', fontSize: '0.8125rem' }}>v{health.version}</span>}
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button className="btn btn-secondary">
-            <RefreshCw size={16} />
+          <button className="btn btn-secondary" onClick={fetchData} disabled={loading}>
+            <RefreshCw size={16} className={loading ? 'animate-pulse' : ''} />
             Sync Results
           </button>
-          <button className="btn btn-primary">
+          <button className="btn btn-primary" onClick={handleRunEvaluation} disabled={runningEval}>
             <Play size={16} fill="currentColor" />
-            Run Evaluation
+            {runningEval ? 'Running...' : 'Run Evaluation'}
           </button>
         </div>
       </header>
 
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem' }}>
-        <MetricCard loading={loading} label="Global Reliability Score" value="86%" change="5%" trend="up" />
-        <MetricCard loading={loading} label="Safety & Guardrails" value="95%" change="3%" trend="up" />
-        <MetricCard loading={loading} label="Avg. Tokens / Task" value="12.4k" change="1.2k" trend="down" />
-        <MetricCard loading={loading} label="Active Failure Modes" value="3" change="2" trend="down" />
+        <MetricCard loading={loading} label="Avg. Pass@k Score" value={`${avgPassK}%`} change={completedRuns.length > 0 ? `${completedRuns.length} runs` : '—'} trend={avgPassK > 50 ? 'up' : 'down'} />
+        <MetricCard loading={loading} label="Blocked Releases" value={blockedCount} change={completedRuns.length > 0 ? `of ${completedRuns.length}` : '—'} trend={blockedCount > 0 ? 'down' : 'up'} />
+        <MetricCard loading={loading} label="Total Runs" value={runs.length} change="all time" trend="neutral" />
+        <MetricCard loading={loading} label="Active Failure Modes" value={totalFailureModes} change={totalFailureModes > 0 ? 'detected' : 'none'} trend={totalFailureModes > 0 ? 'down' : 'up'} />
       </section>
 
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
@@ -74,7 +150,7 @@ export default function Dashboard() {
                 Tracking agent capability and safety across version updates.
               </p>
             </div>
-            <span className="badge info">Pass^k Metric</span>
+            <span className="badge info">Pass@k Metric</span>
           </div>
           
           <div style={{ height: '320px', width: '100%' }}>
@@ -114,7 +190,7 @@ export default function Dashboard() {
             <div>
               <h3 style={{ marginBottom: '0.25rem', fontSize: '1.125rem' }}>Recent Failures</h3>
               <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
-                Detected by Process Classifier.
+                Detected by Process Reward Model.
               </p>
             </div>
           </div>
@@ -127,11 +203,7 @@ export default function Dashboard() {
                 <div className="skeleton" style={{ width: '100%', height: '80px' }}></div>
               </>
             ) : (
-              [
-                { id: 'run-993', type: 'Tool Loop', desc: 'Agent repeatedly called check_status() without waiting.', severity: 'high', icon: RefreshCw },
-                { id: 'run-991', type: 'Hallucination', desc: 'Invented non-existent parameter in write_file().', severity: 'medium', icon: Bug },
-                { id: 'run-985', type: 'Goal Drift', desc: 'Forgot primary objective during multi-step web search.', severity: 'medium', icon: Navigation },
-              ].map((failure) => {
+              displayFailures.map((failure) => {
                 const Icon = failure.icon;
                 return (
                   <div key={failure.id} className="card-interactive" style={{ 
