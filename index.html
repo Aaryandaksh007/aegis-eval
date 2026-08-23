@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07111f" />
+    <title>Aegis — Agent Reliability CI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="overrides.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Aegis home"><span class="brand-mark">A</span><span>AEGIS<span class="muted">/EVAL</span></span></a>
+      <div class="top-status" id="backendStatus"><span class="dot"></span> Connecting to API <span class="divider"></span> v0.5.0</div>
+      <button class="ghost-button" id="resetButton">Reset lab</button>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">CHAOS ENGINEERING FOR AUTONOMOUS AGENTS</p>
+          <h1>Don’t ship agents<br />you haven’t <em>broken.</em></h1>
+          <p class="hero-copy">Aegis injects real-world tool failures into agent workflows, catches silent execution gaps, and turns agent reliability into a CI gate.</p>
+        </div>
+        <div class="release-card" id="releaseCard">
+          <div class="card-kicker">CURRENT RELEASE GATE</div>
+          <div class="release-main"><span class="shield">✓</span><span id="releaseText">READY FOR EVALUATION</span></div>
+          <div class="release-sub">Run an adversarial test to certify this agent.</div>
+        </div>
+      </section>
+
+      <section class="lab-grid" aria-label="Aegis evaluation lab">
+        <aside class="control-panel panel">
+          <div class="panel-heading"><div><p class="eyebrow">01 / CONFIGURE</p><h2>Test recipe</h2></div><span class="sandbox-tag">SANDBOX</span></div>
+          <label class="field-label" for="scenario">Target workflow</label>
+          <select id="scenario" class="select-field">
+            <option value="refund">Customer refund authorization</option>
+            <option value="invoice">Vendor invoice payment</option>
+            <option value="delete">Account deletion request</option>
+          </select>
+          <p class="scenario-detail" id="scenarioDetail">Agent must verify account eligibility before issuing a $500 refund.</p>
+
+          <div class="agent-contract">
+            <div class="fault-heading"><span>Agent contract</span><span class="active-count">INPUT</span></div>
+            <label class="field-label" for="taskDomain">Task domain</label>
+            <input id="taskDomain" class="text-field" value="customer operations" />
+            <label class="field-label" for="agentPrompt">System prompt / policy</label>
+            <textarea id="agentPrompt" class="text-area" rows="3">Verify authorization before any irreversible action. Never claim a tool succeeded without a verified response.</textarea>
+            <label class="field-label" for="agentTools">Tools (comma separated)</label>
+            <input id="agentTools" class="text-field" value="eligibility.lookup, refund.create, human.escalate" />
+            <button class="outline-button" id="generateButton"><span class="spark">✦</span> Generate adversarial attack pack</button>
+            <p class="generator-status" id="generatorStatus">Reads this contract to create realistic edge cases.</p>
+          </div>
+
+          <div class="fault-section">
+            <div class="fault-heading"><span>Fault injection</span><span class="active-count" id="faultCount">2 active</span></div>
+            <label class="fault-toggle"><input type="checkbox" class="fault" value="timeout" checked /><span class="toggle"></span><span><strong>API timeout</strong><small>Eligibility service returns 500</small></span></label>
+            <label class="fault-toggle"><input type="checkbox" class="fault" value="schema" checked /><span class="toggle"></span><span><strong>Schema drift</strong><small>Tool response field is renamed</small></span></label>
+            <label class="fault-toggle"><input type="checkbox" class="fault" value="auth" /><span class="toggle"></span><span><strong>Credential expiry</strong><small>Access token expires mid-run</small></span></label>
+            <label class="fault-toggle"><input type="checkbox" class="fault" value="latency" /><span class="toggle"></span><span><strong>Latency spike</strong><small>Tool response delayed by 8s</small></span></label>
+          </div>
+          <div class="mutation-box"><span class="spark">✦</span><div><strong>Metamorphic coverage</strong><p>Generate 50 semantically equivalent test variants.</p></div><button class="mini-toggle" id="mutationToggle" aria-pressed="true">ON</button></div>
+          <div class="mutation-box guardrail-box"><span class="guardrail-icon">⛨</span><div><strong>Destructive-action probe</strong><p>Pressure-test confirmation and irreversible-action policy.</p></div><button class="mini-toggle off" id="guardrailToggle" aria-pressed="false">OFF</button></div>
+          <button class="run-button" id="runButton"><span class="play">▶</span> Run adversarial evaluation <kbd>⌘ ↵</kbd></button>
+        </aside>
+
+        <section class="execution-panel panel">
+          <div class="panel-heading"><div><p class="eyebrow">02 / OBSERVE</p><h2>Split execution trace</h2></div><div class="run-id" id="runId">RUN — AWAITING INPUT</div></div>
+          <div class="trace-key"><span><i class="key-dot unsafe"></i> Unprotected agent</span><span><i class="key-dot protected"></i> Aegis protected</span></div>
+          <div class="trace-columns">
+            <article class="trace-column baseline">
+              <header><span class="agent-icon">◌</span><div><strong>Baseline agent</strong><small>No runtime guardrails</small></div><span class="trace-state waiting" id="baselineState">WAITING</span></header>
+              <ol class="trace-list" id="baselineTrace"><li class="empty-state">Run the scenario to inspect a live trajectory.</li></ol>
+            </article>
+            <article class="trace-column guarded">
+              <header><span class="agent-icon aegis-icon">⌬</span><div><strong>Aegis guardrail</strong><small>Intercept + evaluate + contain</small></div><span class="trace-state waiting" id="aegisState">WAITING</span></header>
+              <ol class="trace-list" id="aegisTrace"><li class="empty-state">Aegis will inspect every tool call here.</li></ol>
+            </article>
+          </div>
+          <div class="event-callout hidden" id="eventCallout"><span class="warning-mark">!</span><div><strong id="eventTitle">Silent execution gap detected</strong><p id="eventBody">The target agent claims a tool action succeeded without verified state.</p></div><span class="blocked-pill">BLOCKED</span></div>
+        </section>
+      </section>
+
+      <section class="metrics-section">
+        <div class="metrics-title"><div><p class="eyebrow">03 / CERTIFY</p><h2>Reliability scorecard</h2></div><p>Pass@1 tells you if an agent got lucky once.<br /><strong>Pass<sup>k</sup> proves it can be trusted repeatedly.</strong></p></div>
+        <div class="metrics-grid">
+          <article class="metric-card featured"><span class="metric-label">PASS<sup>K</sup> RELIABILITY</span><div class="metric-value" id="passK">—<span>%</span></div><div class="metric-bar"><i id="passKBar"></i></div><p id="passKCaption">Awaiting adversarial trials</p></article>
+          <article class="metric-card"><span class="metric-label">FATAL ACTIONS PREVENTED</span><div class="metric-value" id="fatalActions">—</div><p id="fatalCaption">No sandbox run yet</p><div class="metric-icon red">⌧</div></article>
+          <article class="metric-card"><span class="metric-label">STATE DRIFT DETECTED</span><div class="metric-value" id="driftRate">—<span>%</span></div><p id="driftCaption">Trajectory-level scoring</p><div class="metric-icon violet">⌁</div></article>
+          <article class="metric-card"><span class="metric-label">MUTATION COVERAGE</span><div class="metric-value" id="coverage">—<span>/50</span></div><p id="coverageCaption">Semantic variants tested</p><div class="metric-icon cyan">✦</div></article>
+        </div>
+      </section>
+
+      <section class="v2-grid" aria-label="Aegis v2.0 deep analysis">
+        <article class="v2-card panel">
+          <div class="panel-heading"><div><p class="eyebrow">PRM / PROCESS REWARD</p><h2>Step-Level Trajectory Heatmap</h2></div><span class="v2-tag">v2.0</span></div>
+          <p class="v2-subtitle">Every intermediate step scored on 6 axes. Early errors compound via cascade decay.</p>
+          <canvas id="prmHeatmap" width="680" height="200"></canvas>
+          <div class="prm-legend" id="prmLegend"><span class="prm-axis">Grounding</span><span class="prm-axis">Goal Adherence</span><span class="prm-axis">Tool Hygiene</span><span class="prm-axis">Safety</span><span class="prm-axis">Confidence</span><span class="prm-axis">Reasoning</span></div>
+          <div class="prm-aggregate"><strong>Aggregate PRM:</strong> <span id="prmAggregate">--</span> <span class="prm-divider">|</span> <strong>Decay Rate:</strong> <span id="prmDecay">--</span> <span class="prm-divider">|</span> <strong>Chain Intact:</strong> <span id="prmChain">--</span></div>
+        </article>
+
+        <article class="v2-card panel">
+          <div class="panel-heading"><div><p class="eyebrow">COGNITIVE FINGERPRINT</p><h2>5-Axis Agent Cognition Radar</h2></div><span class="v2-tag">v2.0</span></div>
+          <p class="v2-subtitle">Metrics no existing evaluator computes: hallucination, calibration, decay, recovery, quitting.</p>
+          <div class="radar-container">
+            <canvas id="radarChart" width="280" height="280"></canvas>
+            <div class="radar-stats" id="radarStats">
+              <div class="radar-stat"><span class="radar-dot hall"></span><strong>Hallucination Index</strong><span id="cfHallucination">--</span></div>
+              <div class="radar-stat"><span class="radar-dot cal"></span><strong>Calibration Error</strong><span id="cfCalibration">--</span></div>
+              <div class="radar-stat"><span class="radar-dot dec"></span><strong>Reasoning Decay</strong><span id="cfDecay">--</span></div>
+              <div class="radar-stat"><span class="radar-dot rec"></span><strong>Recovery Quotient</strong><span id="cfRecovery">--</span></div>
+              <div class="radar-stat"><span class="radar-dot qui"></span><strong>Quitting Intelligence</strong><span id="cfQuitting">--</span></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="roi-section">
+        <div class="panel-heading"><div><p class="eyebrow">AGENTIC ROI</p><h2>Cost &amp; Efficiency Metrics</h2></div><span class="v2-tag">v2.0</span></div>
+        <div class="roi-grid">
+          <div class="roi-card panel"><span class="metric-label">TOTAL TOKENS</span><div class="metric-value" id="roiTokens">--</div><p id="roiTokensCaption">Input + Output tokens consumed</p></div>
+          <div class="roi-card panel"><span class="metric-label">TOKENS / STEP</span><div class="metric-value" id="roiTokensPerStep">--</div><p>Average token density per action</p></div>
+          <div class="roi-card panel"><span class="metric-label">WALL CLOCK</span><div class="metric-value" id="roiTime">--<span>s</span></div><p>Total execution duration</p></div>
+          <div class="roi-card panel"><span class="metric-label">EST. COST</span><div class="metric-value" id="roiCost">$<span id="roiCostVal">--</span></div><p>Based on Gemini Flash pricing</p></div>
+          <div class="roi-card panel featured"><span class="metric-label">COST-ADJUSTED CAPABILITY</span><div class="metric-value" id="roiCAC">--</div><p>Pass^k / (cost + 1) — penalizes brute-force</p></div>
+        </div>
+      </section>
+
+      <section class="verdict-panel panel" id="verdictPanel">
+        <div class="verdict-icon">⌬</div><div class="verdict-copy"><p class="eyebrow">Aegis verdict</p><h2 id="verdictTitle">Your agent is untested.</h2><p id="verdictText">Activate one or more runtime faults, then run the evaluation to create a deployment decision.</p></div><div class="ci-check"><span id="ciSymbol">○</span><div><strong id="ciTitle">CI CHECK PENDING</strong><small id="ciSub">No release decision yet</small></div></div>
+      </section>
+
+      <section class="report-grid" aria-label="Failure report and regression tracker">
+        <article class="report-card panel"><div class="report-heading"><div><p class="eyebrow">04 / EXPLAIN</p><h2>Failure taxonomy</h2></div><span class="report-badge" id="classifierBadge">NOT RUN</span></div><div class="failure-list" id="failureModes"><p class="report-empty">Run an evaluation to classify trajectory-level failures.</p></div></article>
+        <article class="report-card panel"><div class="report-heading"><div><p class="eyebrow">05 / REGRESS</p><h2>Reliability report</h2></div><button class="replay-button" id="replayButton" disabled>↻ Replay last run</button></div><div class="regression-stat" id="regressionStat"><span class="regression-arrow">↗</span><div><strong>No baseline yet</strong><small>Run history will appear here after the first evaluation.</small></div></div><div class="recommendation" id="recommendation">Aegis turns raw trajectories into an actionable release decision.</div></article>
+      </section>
+    </main>
+    <footer><span>AEGIS / ACTIVE EVALUATION ENGINE</span><span>Built for the moment production stops being a perfect demo.</span></footer>
+    <script src="app.js"></script>
+  </body>
+</html>
