@@ -9,6 +9,15 @@ Aegis is an active reliability and adversarial testing framework for autonomous 
 
 ---
 
+## 🏆 Hackathon Judges: Start Here
+
+Welcome to the Aegis repository! To evaluate this submission:
+1. **Demo Video**: [Insert YouTube/Loom Link Here] — A complete 3-minute walkthrough of the platform and its core innovations.
+2. **Local Prototype Run Instructions**: Please skip down to the [**Getting Started**](#getting-started) section below for crystal-clear instructions on running the FastAPI backend and Next.js frontend locally in < 2 minutes. No heavy dependencies required.
+3. **Core Innovation**: We solve the "Phantom Success" problem in autonomous agents using Process Reward Models (PRM) and dynamic adversarial injection (see [Core Capabilities](#core-capabilities)).
+
+---
+
 ## Why Aegis?
 
 Standard agent benchmarks test whether an agent reaches a goal in nominal conditions. They fail to catch critical production risks:
