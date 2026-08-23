@@ -23,7 +23,7 @@
 
 .logo-icon {
   color: var(--color-brand-primary);
-  filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.4));
+  filter: drop-shadow(0 2px 8px rgba(232, 166, 39, 0.4));
 }
 
 .logo-text {
@@ -71,7 +71,7 @@
 .nav-item.active {
   background-color: var(--color-brand-primary-subtle);
   color: var(--color-brand-primary);
-  border-color: rgba(99, 102, 241, 0.2);
+  border-color: rgba(232, 166, 39, 0.2);
   font-weight: 600;
 }
 

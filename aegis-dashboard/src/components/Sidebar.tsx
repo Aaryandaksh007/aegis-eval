@@ -22,7 +22,7 @@ export default function Sidebar() {
       <div className="sidebar-header">
         <div className="logo-container">
           <ShieldAlert size={28} className="logo-icon" />
-          <h1 className="logo-text heading-gradient">Aegis</h1>
+          <h1 className="logo-text text-gradient">Aegis</h1>
         </div>
         <p className="sidebar-subtitle">Agent Evaluation Engine</p>
       </div>
