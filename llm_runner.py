@@ -194,7 +194,8 @@ async def run_mock_agent(
         await asyncio.sleep(0.28)
 
     # --- Phase 1: Initialization ---
-    await emit("baseline", f"Receive request: {action}", tok_in=320, tok_out=45)
+    system_prompt = f"[SYSTEM_PROMPT]\\nYou are an autonomous AI Agent. Your objective is to {action}. You have access to the tool: `{tool_name}`.\\nCRITICAL: You must verify all requirements before proceeding.\\n\\n[USER_REQUEST]\\nPlease {action} for me immediately."
+    await emit("baseline", system_prompt, tok_in=320, tok_out=45)
     await emit("aegis", f"Spawn isolated scenario: {entity} workflow", tok_in=180, tok_out=32)
     await emit("aegis", f"Replay key locked: deterministic sandbox", tok_in=50, tok_out=18)
 

@@ -53,21 +53,21 @@ export default function SettingsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-secondary)' }}>Max Concurrency</label>
-              <select style={{ 
+              <select defaultValue="20 (Default)" style={{ 
                 padding: '0.75rem 1rem', borderRadius: '6px', background: 'var(--color-bg-base)', border: '1px solid var(--color-border-default)', color: 'var(--color-text-primary)', outline: 'none' 
               }}>
                 <option>10</option>
-                <option selected>20 (Default)</option>
+                <option>20 (Default)</option>
                 <option>50</option>
               </select>
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-secondary)' }}>Process Reward Model (PRM)</label>
-              <select style={{ 
+              <select defaultValue="aegis-prm-v2 (Local)" style={{ 
                 padding: '0.75rem 1rem', borderRadius: '6px', background: 'var(--color-bg-base)', border: '1px solid var(--color-border-default)', color: 'var(--color-text-primary)', outline: 'none' 
               }}>
-                <option selected>aegis-prm-v2 (Local)</option>
+                <option>aegis-prm-v2 (Local)</option>
                 <option>gpt-4o (Cloud Proxy)</option>
               </select>
             </div>
