@@ -21,27 +21,27 @@ export default function MetricCard({ label, value, change, trend, loading = fals
 
   const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
   const trendColor = trend === 'up' ? 'var(--color-status-success)' : trend === 'down' ? 'var(--color-status-danger)' : 'var(--color-text-tertiary)';
-  
+
   // Custom logic: in Aegis, "Failure Modes" trending down is good, but for now we'll keep standard colors or pass them via props.
   // Assuming 'up' is green, 'down' is red by default.
 
   return (
     <div className="card card-interactive" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      <span style={{ 
-        color: 'var(--color-text-secondary)', 
-        fontSize: '0.8125rem', 
-        fontWeight: 600, 
-        textTransform: 'uppercase', 
-        letterSpacing: '0.05em' 
+      <span style={{
+        color: 'var(--color-text-secondary)',
+        fontSize: '0.8125rem',
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em'
       }}>
         {label}
       </span>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '4px' }}>
-        <span style={{ 
-          fontSize: '2rem', 
-          fontWeight: 700, 
+        <span style={{
+          fontSize: '2rem',
+          fontWeight: 700,
           lineHeight: 1,
-          color: 'var(--color-text-primary)' 
+          color: 'var(--color-text-primary)'
         }}>
           {value}
         </span>
